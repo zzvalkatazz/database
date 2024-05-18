@@ -314,3 +314,44 @@ bool Database::updateRow(const std::string& table_name, int row_index, const std
     std::cerr << "Error: Table '" << table_name << "' not found!" << std::endl;
     return false;
 }
+std::vector<std::vector<std::string>> Database::select(const std::string& table_name, const std::vector<std::string>& columns) {
+    std::vector<std::vector<std::string>> result;
+    for (const auto& table : database) {
+        if (table.name == table_name) {
+            std::vector<int> column_indices;
+            for (const auto& col : columns) {
+                auto it = std::find(table.columns.begin(), table.columns.end(), col);
+                if (it != table.columns.end()) {
+                    column_indices.push_back(it - table.columns.begin());
+                } else {
+                    std::cerr << "Error: Column '" << col << "' not found in table '" << table_name << "'!" << std::endl;
+                    return result;
+                }
+            }
+
+            for (const auto& row : table.data) {
+                std::vector<std::string> selected_row;
+                for (int idx : column_indices) {
+                    selected_row.push_back(row[idx]);
+                }
+                result.push_back(selected_row);
+            }
+            break;
+        }
+    }
+    return result;
+}
+
+bool Database::addColumn(const std::string& table_name, const std::string& column_name, const std::string& default_value) {
+    for (auto& table : database) {
+        if (table.name == table_name) {
+            table.columns.push_back(column_name);
+            for (auto& row : table.data) {
+                row.push_back(default_value);
+            }
+            return true;
+        }
+    }
+    std::cerr << "Error: Table '" << table_name << "' not found!" << std::endl;
+    return false;
+}
