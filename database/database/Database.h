@@ -33,6 +33,9 @@ public:
     bool deleteRow(const std::string& table_name, int row_index);
     bool updateRow(const std::string& table_name, int row_index, const std::vector<std::string>& new_values);
 
+    std::vector<std::vector<std::string>> select(const std::string& table_name, const std::vector<std::string>& columns);
+    bool addColumn(const std::string& table_name, const std::string& column_name, const std::string& default_value);
+
 private:
     std::vector<Table> database;
 };
